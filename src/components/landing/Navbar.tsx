@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { user, role, signOut, loading } = useAuth();
 
   const navLinks = [
     { name: "Find Coaches", href: "#coaches" },
@@ -11,6 +15,21 @@ const Navbar = () => {
     { name: "How It Works", href: "#how-it-works" },
     { name: "Reviews", href: "#reviews" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const getRoleLabel = (role: string | null) => {
+    switch (role) {
+      case 'athlete': return 'Athlete';
+      case 'parent': return 'Parent';
+      case 'coach': return 'Coach';
+      case 'admin': return 'Admin';
+      default: return '';
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/90 backdrop-blur-md border-b border-cream/10">
@@ -41,12 +60,41 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" className="text-cream hover:text-cream hover:bg-cream/10">
-              Log In
-            </Button>
-            <Button variant="accent">
-              Get Started
-            </Button>
+            {loading ? (
+              <div className="h-10 w-24 bg-cream/10 animate-pulse rounded-md" />
+            ) : user ? (
+              <>
+                <div className="text-cream/80 text-sm">
+                  <span className="text-cream font-medium">{user.user_metadata?.first_name || 'User'}</span>
+                  {role && (
+                    <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
+                      {getRoleLabel(role)}
+                    </span>
+                  )}
+                </div>
+                <Button 
+                  variant="ghost" 
+                  className="text-cream hover:text-cream hover:bg-cream/10"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="text-cream hover:text-cream hover:bg-cream/10"
+                  onClick={() => navigate('/auth')}
+                >
+                  Log In
+                </Button>
+                <Button variant="accent" onClick={() => navigate('/auth')}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -73,12 +121,44 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-cream/10">
-                <Button variant="ghost" className="text-cream hover:text-cream hover:bg-cream/10 justify-start">
-                  Log In
-                </Button>
-                <Button variant="accent">
-                  Get Started
-                </Button>
+                {loading ? (
+                  <div className="h-10 w-full bg-cream/10 animate-pulse rounded-md" />
+                ) : user ? (
+                  <>
+                    <div className="text-cream/80 text-sm py-2">
+                      <span className="text-cream font-medium">{user.user_metadata?.first_name || 'User'}</span>
+                      {role && (
+                        <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
+                          {getRoleLabel(role)}
+                        </span>
+                      )}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Log Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="ghost" 
+                      className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
+                      onClick={() => { navigate('/auth'); setIsOpen(false); }}
+                    >
+                      Log In
+                    </Button>
+                    <Button 
+                      variant="accent"
+                      onClick={() => { navigate('/auth'); setIsOpen(false); }}
+                    >
+                      Get Started
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>

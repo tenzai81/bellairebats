@@ -17,7 +17,6 @@ interface AuthContextType {
 interface SignUpMetadata {
   first_name: string;
   last_name: string;
-  role: AppRole;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,7 +85,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: {
           first_name: metadata.first_name,
           last_name: metadata.last_name,
-          role: metadata.role,
+          // Note: Role is NOT passed to metadata - all users start as 'athlete'
+          // Role elevation must be done by an admin through proper channels
         },
       },
     });

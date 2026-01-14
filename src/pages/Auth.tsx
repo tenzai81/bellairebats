@@ -116,7 +116,8 @@ const Auth = () => {
     const { error } = await signUp(signupEmail, signupPassword, {
       first_name: firstName,
       last_name: lastName,
-      role,
+      // Note: Role selection is for UX purposes only - all users start as 'athlete'
+      // Role is assigned server-side and can only be changed by an admin
     });
     
     if (error) {

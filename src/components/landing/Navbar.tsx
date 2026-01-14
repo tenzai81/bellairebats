@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -72,6 +72,16 @@ const Navbar = () => {
                     </span>
                   )}
                 </div>
+                {role === 'admin' && (
+                  <Button 
+                    variant="ghost" 
+                    className="text-accent hover:text-accent hover:bg-accent/10"
+                    onClick={() => navigate('/admin')}
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin
+                  </Button>
+                )}
                 <Button 
                   variant="ghost" 
                   className="text-cream hover:text-cream hover:bg-cream/10"
@@ -133,6 +143,16 @@ const Navbar = () => {
                         </span>
                       )}
                     </div>
+                    {role === 'admin' && (
+                      <Button 
+                        variant="ghost" 
+                        className="text-accent hover:text-accent hover:bg-accent/10 justify-start"
+                        onClick={() => { navigate('/admin'); setIsOpen(false); }}
+                      >
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Dashboard
+                      </Button>
+                    )}
                     <Button 
                       variant="ghost" 
                       className="text-cream hover:text-cream hover:bg-cream/10 justify-start"

@@ -14,6 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          apple_calendar_exported: boolean | null
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          duration_minutes: number
+          end_time: string
+          google_event_id: string | null
+          id: string
+          notes: string | null
+          price: number
+          session_date: string
+          session_type: string
+          start_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          apple_calendar_exported?: boolean | null
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          duration_minutes: number
+          end_time: string
+          google_event_id?: string | null
+          id?: string
+          notes?: string | null
+          price: number
+          session_date: string
+          session_type: string
+          start_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          apple_calendar_exported?: boolean | null
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          duration_minutes?: number
+          end_time?: string
+          google_event_id?: string | null
+          id?: string
+          notes?: string | null
+          price?: number
+          session_date?: string
+          session_type?: string
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coaches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coach_availability: {
+        Row: {
+          coach_id: string
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_available: boolean | null
+          start_time: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_available?: boolean | null
+          start_time: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_available?: boolean | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_availability_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coaches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaches: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          experience_years: number | null
+          hourly_rate: number
+          id: string
+          is_active: boolean | null
+          location: string | null
+          rating: number | null
+          review_count: number | null
+          specialty: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          experience_years?: number | null
+          hourly_rate?: number
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialty?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          experience_years?: number | null
+          hourly_rate?: number
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialty?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

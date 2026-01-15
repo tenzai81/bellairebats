@@ -6,53 +6,53 @@
 
 @layer base {
   :root {
-    /* Baseball-inspired color palette */
-    --background: 60 30% 98%;
-    --foreground: 150 40% 10%;
+    /* Red, White & Blue color palette */
+    --background: 0 0% 100%;
+    --foreground: 220 50% 15%;
 
-    --card: 60 30% 96%;
-    --card-foreground: 150 40% 10%;
+    --card: 210 40% 98%;
+    --card-foreground: 220 50% 15%;
 
-    --popover: 60 30% 98%;
-    --popover-foreground: 150 40% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 50% 15%;
 
-    /* Deep forest green - baseball field */
-    --primary: 150 50% 18%;
-    --primary-foreground: 60 30% 98%;
+    /* Navy blue - primary */
+    --primary: 220 70% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Cream - baseball leather */
-    --secondary: 45 40% 94%;
-    --secondary-foreground: 150 40% 15%;
+    /* Light gray/white - secondary */
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 220 50% 20%;
 
-    --muted: 45 20% 90%;
-    --muted-foreground: 150 15% 40%;
+    --muted: 210 15% 92%;
+    --muted-foreground: 220 20% 45%;
 
-    /* Baseball red - stitching accent */
-    --accent: 0 72% 50%;
-    --accent-foreground: 60 30% 98%;
+    /* Patriot red - accent */
+    --accent: 0 75% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 60 30% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 45 20% 85%;
-    --input: 45 20% 85%;
-    --ring: 150 50% 18%;
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 220 70% 25%;
 
     --radius: 0.75rem;
 
     /* Custom tokens */
-    --field-green: 150 50% 25%;
-    --field-green-light: 150 45% 35%;
-    --cream: 45 50% 95%;
-    --cream-dark: 45 30% 88%;
-    --baseball-red: 0 72% 50%;
-    --baseball-red-dark: 0 72% 40%;
-    --leather-brown: 30 50% 30%;
-    --night: 220 30% 10%;
+    --navy: 220 70% 25%;
+    --navy-light: 220 60% 35%;
+    --cream: 210 20% 98%;
+    --cream-dark: 210 15% 92%;
+    --patriot-red: 0 75% 45%;
+    --patriot-red-dark: 0 75% 35%;
+    --star-white: 0 0% 100%;
+    --night: 220 50% 10%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--field-green)) 50%, hsl(150 40% 22%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--baseball-red-dark)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--navy)) 50%, hsl(220 60% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--patriot-red-dark)) 100%);
     --gradient-card: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--cream-dark)) 100%);
 
     /* Shadows */
@@ -60,53 +60,53 @@
     --shadow-card: 0 8px 30px -8px hsl(var(--primary) / 0.12);
     --shadow-elevated: 0 20px 50px -15px hsl(var(--primary) / 0.2);
 
-    --sidebar-background: 60 30% 98%;
-    --sidebar-foreground: 150 40% 10%;
-    --sidebar-primary: 150 50% 18%;
-    --sidebar-primary-foreground: 60 30% 98%;
-    --sidebar-accent: 45 40% 94%;
-    --sidebar-accent-foreground: 150 40% 15%;
-    --sidebar-border: 45 20% 85%;
-    --sidebar-ring: 150 50% 18%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 50% 15%;
+    --sidebar-primary: 220 70% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 220 50% 20%;
+    --sidebar-border: 210 20% 88%;
+    --sidebar-ring: 220 70% 25%;
   }
 
   .dark {
-    --background: 220 30% 8%;
-    --foreground: 60 30% 95%;
+    --background: 220 50% 8%;
+    --foreground: 210 20% 95%;
 
-    --card: 220 25% 12%;
-    --card-foreground: 60 30% 95%;
+    --card: 220 45% 12%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 60 30% 95%;
+    --popover: 220 45% 12%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 150 45% 45%;
-    --primary-foreground: 220 30% 8%;
+    --primary: 220 60% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 60 30% 95%;
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 210 20% 95%;
 
-    --muted: 220 20% 18%;
-    --muted-foreground: 60 15% 65%;
+    --muted: 220 30% 18%;
+    --muted-foreground: 210 15% 65%;
 
-    --accent: 0 72% 55%;
-    --accent-foreground: 60 30% 98%;
+    --accent: 0 75% 55%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
-    --destructive-foreground: 60 30% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
-    --ring: 150 45% 45%;
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
+    --ring: 220 60% 55%;
 
-    --sidebar-background: 220 25% 10%;
-    --sidebar-foreground: 60 30% 95%;
-    --sidebar-primary: 150 45% 45%;
-    --sidebar-primary-foreground: 220 30% 8%;
-    --sidebar-accent: 220 20% 18%;
-    --sidebar-accent-foreground: 60 30% 95%;
-    --sidebar-border: 220 20% 20%;
-    --sidebar-ring: 150 45% 45%;
+    --sidebar-background: 220 45% 10%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 220 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 30% 18%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 30% 20%;
+    --sidebar-ring: 220 60% 55%;
   }
 }
 

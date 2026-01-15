@@ -51,19 +51,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        field: {
-          DEFAULT: "hsl(var(--field-green))",
-          light: "hsl(var(--field-green-light))",
+        navy: {
+          DEFAULT: "hsl(var(--navy))",
+          light: "hsl(var(--navy-light))",
         },
         cream: {
           DEFAULT: "hsl(var(--cream))",
           dark: "hsl(var(--cream-dark))",
         },
-        baseball: {
-          red: "hsl(var(--baseball-red))",
-          "red-dark": "hsl(var(--baseball-red-dark))",
+        patriot: {
+          red: "hsl(var(--patriot-red))",
+          "red-dark": "hsl(var(--patriot-red-dark))",
         },
-        leather: "hsl(var(--leather-brown))",
+        star: "hsl(var(--star-white))",
         night: "hsl(var(--night))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

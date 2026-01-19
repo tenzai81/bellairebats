@@ -25,11 +25,13 @@ export type Database = {
           google_event_id: string | null
           id: string
           notes: string | null
+          payment_status: string | null
           price: number
           session_date: string
           session_type: string
           start_time: string
           status: string
+          stripe_session_id: string | null
           updated_at: string
         }
         Insert: {
@@ -42,11 +44,13 @@ export type Database = {
           google_event_id?: string | null
           id?: string
           notes?: string | null
+          payment_status?: string | null
           price: number
           session_date: string
           session_type: string
           start_time: string
           status?: string
+          stripe_session_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -59,11 +63,13 @@ export type Database = {
           google_event_id?: string | null
           id?: string
           notes?: string | null
+          payment_status?: string | null
           price?: number
           session_date?: string
           session_type?: string
           start_time?: string
           status?: string
+          stripe_session_id?: string | null
           updated_at?: string
         }
         Relationships: [

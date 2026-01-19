@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { useBooking, Coach, BookingData } from '@/hooks/useBooking';
 import { formatTimeSlot, generateTimeSlots } from '@/lib/calendar-utils';
 import { useAuth } from '@/hooks/useAuth';
-import { Calendar as CalendarIcon, Clock, DollarSign, Star, MapPin, Apple, Chrome, Check, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, DollarSign, Star, MapPin, Loader2, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface BookingModalProps {
@@ -19,7 +19,7 @@ interface BookingModalProps {
   preselectedCoach?: Coach;
 }
 
-type Step = 'coach' | 'datetime' | 'details' | 'confirmation';
+type Step = 'coach' | 'datetime' | 'details';
 
 const DURATION_OPTIONS = [
   { value: 30, label: '30 minutes', priceMultiplier: 0.5 },
@@ -35,7 +35,7 @@ const SESSION_TYPES = [
 const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isLoading, coaches, fetchCoaches, createBooking, addToAppleCalendar, addToGoogleCalendar } = useBooking();
+  const { isLoading, coaches, fetchCoaches, createBookingCheckout, addToAppleCalendar, addToGoogleCalendar } = useBooking();
   
   const [step, setStep] = useState<Step>('coach');
   const [selectedCoach, setSelectedCoach] = useState<Coach | null>(preselectedCoach || null);
@@ -44,7 +44,6 @@ const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProp
   const [duration, setDuration] = useState<30 | 60 | 90>(60);
   const [sessionType, setSessionType] = useState<'one_on_one' | 'group'>('one_on_one');
   const [notes, setNotes] = useState('');
-  const [confirmedBooking, setConfirmedBooking] = useState<BookingData | null>(null);
 
   const timeSlots = generateTimeSlots(8, 20, 30);
 
@@ -69,7 +68,6 @@ const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProp
     setDuration(60);
     setSessionType('one_on_one');
     setNotes('');
-    setConfirmedBooking(null);
   };
 
   const handleClose = () => {
@@ -103,11 +101,8 @@ const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProp
       notes,
     };
 
-    const result = await createBooking(bookingData);
-    if (result) {
-      setConfirmedBooking(bookingData);
-      setStep('confirmation');
-    }
+    // This will redirect to Stripe Checkout
+    await createBookingCheckout(bookingData);
   };
 
   const renderCoachSelection = () => (
@@ -317,78 +312,12 @@ const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProp
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : user ? (
-            'Confirm Booking'
+            'Proceed to Payment'
           ) : (
             'Sign In to Book'
           )}
         </Button>
       </div>
-    </div>
-  );
-
-  const renderConfirmation = () => (
-    <div className="space-y-6 text-center">
-      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-        <Check className="w-8 h-8 text-green-600" />
-      </div>
-      
-      <div>
-        <h3 className="text-xl font-semibold mb-2">Booking Confirmed!</h3>
-        <p className="text-muted-foreground">
-          Your session with {confirmedBooking?.coachName} has been booked.
-        </p>
-      </div>
-
-      <Card className="p-4 text-left">
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Date</span>
-            <span className="font-medium">
-              {confirmedBooking?.sessionDate.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Time</span>
-            <span className="font-medium">
-              {confirmedBooking && formatTimeSlot(confirmedBooking.startTime)}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Duration</span>
-            <span className="font-medium">{confirmedBooking?.duration} minutes</span>
-          </div>
-        </div>
-      </Card>
-
-      <div className="space-y-3">
-        <p className="text-sm font-medium">Add to your calendar</p>
-        <div className="flex gap-3 justify-center">
-          <Button
-            variant="outline"
-            onClick={() => confirmedBooking && addToAppleCalendar(confirmedBooking)}
-            className="flex items-center gap-2"
-          >
-            <Apple className="w-4 h-4" />
-            Apple Calendar
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => confirmedBooking && addToGoogleCalendar(confirmedBooking)}
-            className="flex items-center gap-2"
-          >
-            <Chrome className="w-4 h-4" />
-            Google Calendar
-          </Button>
-        </div>
-      </div>
-
-      <Button onClick={handleClose} className="w-full">
-        Done
-      </Button>
     </div>
   );
 
@@ -399,15 +328,13 @@ const BookingModal = ({ open, onOpenChange, preselectedCoach }: BookingModalProp
           <DialogTitle>
             {step === 'coach' && 'Book a Session'}
             {step === 'datetime' && 'Select Date & Time'}
-            {step === 'details' && 'Review Booking'}
-            {step === 'confirmation' && 'Success!'}
+            {step === 'details' && 'Review & Pay'}
           </DialogTitle>
         </DialogHeader>
         
         {step === 'coach' && renderCoachSelection()}
         {step === 'datetime' && renderDateTimeSelection()}
         {step === 'details' && renderDetailsReview()}
-        {step === 'confirmation' && renderConfirmation()}
       </DialogContent>
     </Dialog>
   );

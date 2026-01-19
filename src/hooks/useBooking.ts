@@ -54,7 +54,7 @@ export const useBooking = () => {
     }
   };
 
-  const createBooking = async (bookingData: BookingData) => {
+  const createBookingCheckout = async (bookingData: BookingData) => {
     setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -74,41 +74,53 @@ export const useBooking = () => {
       const endHours = hours + Math.floor(endMinutes / 60);
       const endTime = `${endHours.toString().padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`;
 
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert({
-          coach_id: bookingData.coachId,
-          athlete_id: user.id,
-          session_date: bookingData.sessionDate.toISOString().split('T')[0],
-          start_time: bookingData.startTime,
-          end_time: endTime,
-          duration_minutes: bookingData.duration,
-          session_type: bookingData.sessionType,
+      const { data, error } = await supabase.functions.invoke('create-booking-checkout', {
+        body: {
+          coachId: bookingData.coachId,
+          coachName: bookingData.coachName,
+          sessionDate: bookingData.sessionDate.toISOString().split('T')[0],
+          startTime: bookingData.startTime,
+          endTime: endTime,
+          duration: bookingData.duration,
+          sessionType: bookingData.sessionType,
           price: bookingData.price,
-          notes: bookingData.notes || null,
-          status: 'confirmed',
-        })
-        .select()
-        .single();
+          notes: bookingData.notes,
+        },
+      });
 
       if (error) throw error;
 
-      toast({
-        title: 'Booking Confirmed!',
-        description: `Your session with ${bookingData.coachName} has been booked.`,
-      });
+      if (data?.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+        return data;
+      }
 
-      return data;
+      throw new Error('No checkout URL returned');
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error('Error creating booking checkout:', error);
       toast({
         title: 'Booking Failed',
-        description: 'Failed to create booking. Please try again.',
+        description: 'Failed to initiate payment. Please try again.',
         variant: 'destructive',
       });
       return null;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const verifyPayment = async (sessionId: string, bookingId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-booking-payment', {
+        body: { sessionId, bookingId },
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      return null;
     }
   };
 
@@ -162,7 +174,8 @@ export const useBooking = () => {
     isLoading,
     coaches,
     fetchCoaches,
-    createBooking,
+    createBookingCheckout,
+    verifyPayment,
     addToAppleCalendar,
     addToGoogleCalendar,
   };

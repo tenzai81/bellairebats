@@ -19,6 +19,7 @@ const CoachDashboard = () => {
     isLoading,
     updateAvailability,
     updateBookingStatus,
+    cancelBookingWithRefund,
     refreshData,
   } = useCoachDashboard(user?.id);
 
@@ -107,7 +108,8 @@ const CoachDashboard = () => {
               <TabsContent value="bookings" className="mt-6">
                 <BookingsList 
                   bookings={bookings} 
-                  onUpdateStatus={updateBookingStatus} 
+                  onUpdateStatus={updateBookingStatus}
+                  onCancelWithRefund={cancelBookingWithRefund}
                 />
               </TabsContent>
               

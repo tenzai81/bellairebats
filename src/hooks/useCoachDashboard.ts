@@ -33,6 +33,8 @@ export interface Booking {
   duration_minutes: number;
   session_type: string;
   status: string;
+  payment_status: string | null;
+  stripe_session_id: string | null;
   price: number;
   notes: string | null;
   created_at: string;
@@ -203,6 +205,37 @@ export const useCoachDashboard = (userId: string | undefined) => {
     return true;
   };
 
+  const cancelBookingWithRefund = async (bookingId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('cancel-booking', {
+        body: { bookingId },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Booking Cancelled',
+        description: data.message,
+      });
+
+      // Update local state
+      setBookings(prev => prev.map(b => 
+        b.id === bookingId 
+          ? { ...b, status: 'cancelled', payment_status: data.refund ? 'refunded' : b.payment_status } 
+          : b
+      ));
+      return true;
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      toast({
+        title: 'Error cancelling booking',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
   const updateProfile = async (updates: Partial<CoachProfile>) => {
     if (!coachProfile) return false;
 
@@ -236,6 +269,7 @@ export const useCoachDashboard = (userId: string | undefined) => {
     isLoading,
     updateAvailability,
     updateBookingStatus,
+    cancelBookingWithRefund,
     updateProfile,
     refreshData: loadDashboardData,
     DAYS_OF_WEEK,

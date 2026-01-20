@@ -7,14 +7,36 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const sendBookingEmail = async (supabaseUrl: string, emailData: Record<string, unknown>) => {
+  try {
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+      },
+      body: JSON.stringify(emailData),
+    });
+    
+    if (!response.ok) {
+      console.error("Failed to send email:", await response.text());
+    } else {
+      console.log("Email sent successfully");
+    }
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
+    supabaseUrl,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
   );
 
@@ -49,7 +71,7 @@ serve(async (req) => {
         throw new Error("Failed to update booking status");
       }
 
-      // Fetch the updated booking
+      // Fetch the updated booking with coach info
       const { data: booking, error: fetchError } = await supabaseClient
         .from("bookings")
         .select(`
@@ -61,6 +83,31 @@ serve(async (req) => {
 
       if (fetchError) {
         console.error("Error fetching booking:", fetchError);
+      }
+
+      // Get athlete info for email
+      const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", booking.athlete_id)
+        .single();
+
+      // Get athlete email from auth
+      const { data: { user } } = await supabaseClient.auth.admin.getUserById(booking.athlete_id);
+
+      // Send confirmation email
+      if (user?.email && booking) {
+        await sendBookingEmail(supabaseUrl, {
+          type: "payment_confirmed",
+          recipientEmail: user.email,
+          recipientName: profile?.first_name || "Athlete",
+          coachName: booking.coaches?.display_name || "Your Coach",
+          sessionDate: booking.session_date,
+          startTime: booking.start_time,
+          duration: booking.duration_minutes,
+          sessionType: booking.session_type,
+          price: booking.price,
+        });
       }
 
       return new Response(

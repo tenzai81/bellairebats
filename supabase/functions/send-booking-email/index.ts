@@ -9,10 +9,11 @@ const corsHeaders = {
 };
 
 interface BookingEmailRequest {
-  type: "payment_confirmed" | "booking_confirmed" | "booking_cancelled" | "refund_processed";
+  type: "payment_confirmed" | "booking_confirmed" | "booking_cancelled" | "refund_processed" | "coach_new_booking" | "coach_booking_cancelled";
   recipientEmail: string;
   recipientName: string;
   coachName: string;
+  athleteName?: string;
   sessionDate: string;
   startTime: string;
   duration: number;
@@ -109,6 +110,49 @@ const getEmailContent = (data: BookingEmailRequest) => {
             <p>The refund should appear in your account within 5-10 business days, depending on your bank.</p>
             <p>We're sorry this session couldn't take place. Please book another session when you're ready.</p>
             <p style="color: #666; font-size: 14px;">Thank you for your patience!</p>
+          </div>
+        `,
+      };
+
+    case "coach_new_booking":
+      return {
+        subject: "New Training Session Booked! 🎉",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #1a1a1a;">New Booking Received! 🎉</h1>
+            <p>Hi ${data.recipientName},</p>
+            <p>Great news! <strong>${data.athleteName || "An athlete"}</strong> has booked a training session with you.</p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 5px 0;"><strong>Athlete:</strong> ${data.athleteName || "Not provided"}</p>
+              <p style="margin: 5px 0;"><strong>Date:</strong> ${formatDate(data.sessionDate)}</p>
+              <p style="margin: 5px 0;"><strong>Time:</strong> ${formatTime(data.startTime)}</p>
+              <p style="margin: 5px 0;"><strong>Duration:</strong> ${data.duration} minutes</p>
+              <p style="margin: 5px 0;"><strong>Session Type:</strong> ${data.sessionType === "one_on_one" ? "1-on-1" : "Group"}</p>
+              <p style="margin: 5px 0;"><strong>Earnings:</strong> $${data.price.toFixed(2)}</p>
+            </div>
+            <p>Log in to your dashboard to view the booking details and manage your schedule.</p>
+            <p style="color: #666; font-size: 14px;">Thank you for being part of Bellaire Bats!</p>
+          </div>
+        `,
+      };
+
+    case "coach_booking_cancelled":
+      return {
+        subject: "Training Session Cancelled",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #1a1a1a;">Session Cancelled</h1>
+            <p>Hi ${data.recipientName},</p>
+            <p>A training session with <strong>${data.athleteName || "an athlete"}</strong> has been cancelled.</p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 5px 0;"><strong>Athlete:</strong> ${data.athleteName || "Not provided"}</p>
+              <p style="margin: 5px 0;"><strong>Date:</strong> ${formatDate(data.sessionDate)}</p>
+              <p style="margin: 5px 0;"><strong>Time:</strong> ${formatTime(data.startTime)}</p>
+              <p style="margin: 5px 0;"><strong>Duration:</strong> ${data.duration} minutes</p>
+              <p style="margin: 5px 0;"><strong>Session Type:</strong> ${data.sessionType === "one_on_one" ? "1-on-1" : "Group"}</p>
+            </div>
+            <p>This time slot is now available for other bookings.</p>
+            <p style="color: #666; font-size: 14px;">Thank you for your understanding!</p>
           </div>
         `,
       };

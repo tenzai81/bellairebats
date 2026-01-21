@@ -70,7 +70,7 @@ serve(async (req) => {
       .from("bookings")
       .select(`
         *,
-        coaches:coach_id (display_name)
+        coaches:coach_id (display_name, user_id)
       `)
       .eq("id", bookingId)
       .single();
@@ -169,7 +169,9 @@ serve(async (req) => {
     // Get athlete email from auth
     const { data: { user: athleteUser } } = await supabaseClient.auth.admin.getUserById(booking.athlete_id);
 
-    // Send cancellation email
+    const athleteName = profile ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() : "Athlete";
+
+    // Send cancellation email to athlete
     if (athleteUser?.email) {
       await sendBookingEmail(supabaseUrl, {
         type: refundResult ? "refund_processed" : "booking_cancelled",
@@ -183,6 +185,26 @@ serve(async (req) => {
         price: booking.price,
         refundAmount: refundResult?.amount,
       });
+    }
+
+    // Send cancellation notification to coach
+    if (booking?.coaches?.user_id) {
+      const { data: { user: coachUser } } = await supabaseClient.auth.admin.getUserById(booking.coaches.user_id);
+      
+      if (coachUser?.email) {
+        await sendBookingEmail(supabaseUrl, {
+          type: "coach_booking_cancelled",
+          recipientEmail: coachUser.email,
+          recipientName: booking.coaches.display_name || "Coach",
+          coachName: booking.coaches.display_name || "Coach",
+          athleteName: athleteName,
+          sessionDate: booking.session_date,
+          startTime: booking.start_time,
+          duration: booking.duration_minutes,
+          sessionType: booking.session_type,
+          price: booking.price,
+        });
+      }
     }
 
     return new Response(

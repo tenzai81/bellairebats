@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, Shield } from "lucide-react";
+import { Menu, X, LogOut, Shield, CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -72,6 +72,26 @@ const Navbar = () => {
                     </span>
                   )}
                 </div>
+                {(role === 'athlete' || role === 'parent') && (
+                  <Button 
+                    variant="ghost" 
+                    className="text-cream hover:text-cream hover:bg-cream/10"
+                    onClick={() => navigate('/my-bookings')}
+                  >
+                    <CalendarDays className="w-4 h-4 mr-2" />
+                    My Bookings
+                  </Button>
+                )}
+                {role === 'coach' && (
+                  <Button 
+                    variant="ghost" 
+                    className="text-cream hover:text-cream hover:bg-cream/10"
+                    onClick={() => navigate('/coach')}
+                  >
+                    <CalendarDays className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                )}
                 {role === 'admin' && (
                   <Button 
                     variant="ghost" 
@@ -143,6 +163,26 @@ const Navbar = () => {
                         </span>
                       )}
                     </div>
+                    {(role === 'athlete' || role === 'parent') && (
+                      <Button 
+                        variant="ghost" 
+                        className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
+                        onClick={() => { navigate('/my-bookings'); setIsOpen(false); }}
+                      >
+                        <CalendarDays className="w-4 h-4 mr-2" />
+                        My Bookings
+                      </Button>
+                    )}
+                    {role === 'coach' && (
+                      <Button 
+                        variant="ghost" 
+                        className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
+                        onClick={() => { navigate('/coach'); setIsOpen(false); }}
+                      >
+                        <CalendarDays className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Button>
+                    )}
                     {role === 'admin' && (
                       <Button 
                         variant="ghost" 

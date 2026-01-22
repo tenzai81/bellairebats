@@ -1,6 +1,17 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Calendar, Clock, DollarSign, Check, X } from 'lucide-react';
 import { format, parseISO, isAfter, isBefore, startOfDay } from 'date-fns';
 import type { Booking } from '@/hooks/useCoachDashboard';
@@ -26,6 +37,10 @@ const paymentStatusColors: Record<string, string> = {
 };
 
 const BookingsList = ({ bookings, onUpdateStatus, onCancelWithRefund }: BookingsListProps) => {
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
   const today = startOfDay(new Date());
   
   const upcomingBookings = bookings.filter(b => 
@@ -46,16 +61,30 @@ const BookingsList = ({ bookings, onUpdateStatus, onCancelWithRefund }: Bookings
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
+  const openCancelDialog = (booking: Booking) => {
+    setBookingToCancel(booking);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!bookingToCancel) return;
+    
+    setIsCancelling(true);
+    const isPaid = bookingToCancel.payment_status === 'paid';
+    
+    if (isPaid) {
+      await onCancelWithRefund(bookingToCancel.id);
+    } else {
+      await onUpdateStatus(bookingToCancel.id, 'cancelled');
+    }
+    
+    setIsCancelling(false);
+    setCancelDialogOpen(false);
+    setBookingToCancel(null);
+  };
+
   const renderBookingCard = (booking: Booking) => {
     const isPaid = booking.payment_status === 'paid';
-    
-    const handleCancel = () => {
-      if (isPaid) {
-        onCancelWithRefund(booking.id);
-      } else {
-        onUpdateStatus(booking.id, 'cancelled');
-      }
-    };
 
     return (
       <div
@@ -110,7 +139,7 @@ const BookingsList = ({ bookings, onUpdateStatus, onCancelWithRefund }: Bookings
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleCancel}
+                onClick={() => openCancelDialog(booking)}
                 className="text-red-600 border-red-600 hover:bg-red-500/10"
               >
                 <X className="w-4 h-4 mr-1" />
@@ -132,7 +161,7 @@ const BookingsList = ({ bookings, onUpdateStatus, onCancelWithRefund }: Bookings
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleCancel}
+                onClick={() => openCancelDialog(booking)}
                 className="text-red-600 border-red-600 hover:bg-red-500/10"
               >
                 <X className="w-4 h-4 mr-1" />
@@ -151,8 +180,46 @@ const BookingsList = ({ bookings, onUpdateStatus, onCancelWithRefund }: Bookings
     );
   };
 
+  const isPaidBooking = bookingToCancel?.payment_status === 'paid';
+
   return (
     <div className="space-y-6">
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {isPaidBooking ? 'Cancel Booking & Issue Refund?' : 'Cancel Booking?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bookingToCancel && (
+                <>
+                  You are about to cancel the session on{' '}
+                  <strong>{format(parseISO(bookingToCancel.session_date), 'MMMM d, yyyy')}</strong> at{' '}
+                  <strong>{formatTime(bookingToCancel.start_time)}</strong>.
+                  {isPaidBooking && (
+                    <span className="block mt-2 text-orange-600">
+                      A refund of <strong>${bookingToCancel.price}</strong> will be issued to the athlete.
+                    </span>
+                  )}
+                  <span className="block mt-2">This action cannot be undone.</span>
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCancelling}>Keep Booking</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmCancel}
+              disabled={isCancelling}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isCancelling ? 'Cancelling...' : isPaidBooking ? 'Cancel & Refund' : 'Cancel Booking'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Upcoming Bookings */}
       <Card className="bg-card border-border">
         <CardHeader>

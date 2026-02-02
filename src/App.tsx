@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import CoachDashboard from "./pages/CoachDashboard";
+import CoachLogin from "./pages/CoachLogin";
 import MyBookings from "./pages/MyBookings";
 import BookingSuccess from "./pages/BookingSuccess";
 import BookingCanceled from "./pages/BookingCanceled";
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/coach" element={<CoachDashboard />} />
+            <Route path="/coach/login" element={<CoachLogin />} />
             <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="/booking-success" element={<BookingSuccess />} />
             <Route path="/booking-canceled" element={<BookingCanceled />} />

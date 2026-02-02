@@ -25,9 +25,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
+  // Use anon key for user authentication
+  const supabaseAuth = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  );
+
+  // Use service role key for database operations (bypasses RLS after user verification)
+  const supabaseAdmin = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    { auth: { persistSession: false } }
   );
 
   try {
@@ -38,7 +46,7 @@ serve(async (req) => {
     }
     
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
     
     if (authError || !user) {
       throw new Error("User not authenticated");
@@ -65,7 +73,7 @@ serve(async (req) => {
     }
 
     // Create booking record with pending payment status
-    const { data: booking, error: bookingError } = await supabaseClient
+    const { data: booking, error: bookingError } = await supabaseAdmin
       .from("bookings")
       .insert({
         coach_id: bookingData.coachId,
@@ -119,7 +127,7 @@ serve(async (req) => {
     });
 
     // Update booking with stripe session id
-    await supabaseClient
+    await supabaseAdmin
       .from("bookings")
       .update({ stripe_session_id: session.id })
       .eq("id", booking.id);

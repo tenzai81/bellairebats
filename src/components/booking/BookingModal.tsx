@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { useBooking, Coach, BookingData } from '@/hooks/useBooking';
 import { formatTimeSlot, generateTimeSlots } from '@/lib/calendar-utils';
 import { useAuth } from '@/hooks/useAuth';
-import { Calendar as CalendarIcon, Clock, DollarSign, Star, MapPin, Loader2, CreditCard } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, DollarSign, Star, MapPin, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface BookingModalProps {

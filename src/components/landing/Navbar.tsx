@@ -116,6 +116,13 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   className="text-cream hover:text-cream hover:bg-cream/10"
+                  onClick={() => navigate('/coach/login')}
+                >
+                  Coach Login
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-cream hover:text-cream hover:bg-cream/10"
                   onClick={() => navigate('/auth')}
                 >
                   Log In
@@ -204,6 +211,13 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
+                    <Button 
+                      variant="ghost" 
+                      className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
+                      onClick={() => { navigate('/coach/login'); setIsOpen(false); }}
+                    >
+                      Coach Login
+                    </Button>
                     <Button 
                       variant="ghost" 
                       className="text-cream hover:text-cream hover:bg-cream/10 justify-start"
